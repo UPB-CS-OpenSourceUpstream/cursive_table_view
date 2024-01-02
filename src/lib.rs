@@ -588,14 +588,21 @@ where
     /// vector.
     pub fn set_selected_item(&mut self, item_index: usize) {
         // TODO optimize the performance for very large item lists
-        if item_index < self.items.len() {
-            for (row, item) in self.rows_to_items.iter().enumerate() {
-                if *item == item_index {
-                    self.focus = row;
-                    self.scroll_core.scroll_to_y(row);
-                    break;
-                }
-            }
+        // if item_index < self.items.len() {
+        //     for (row, item) in self.rows_to_items.iter().enumerate() {
+        //         if *item == item_index {
+        //             self.focus = row;
+        //             self.scroll_core.scroll_to_y(row);
+        //             break;
+        //         }
+        //     }
+        // }
+        let reverse_mapping: HashMap<usize, usize> = self.rows_to_items.iter().enumerate().map(|(row, &item)| (item, row)).collect();
+
+        // Use the reverse mapping to find the row corresponding to the item_index
+        if let Some(&row) = reverse_mapping.get(&item_index) {
+            self.focus = row;
+            self.scroll_core.scroll_to_y(row);
         }
     }
 
