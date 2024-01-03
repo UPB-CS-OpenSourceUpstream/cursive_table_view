@@ -360,10 +360,62 @@ where
     ///
     /// # Example
     ///
-    /// ```ignore
-    /// table.set_on_sort(|siv: &mut Cursive, column: BasicColumn, order: Ordering| {
+    /// ```rust
+    /// # extern crate cursive;
+    /// # extern crate cursive_table_view;
+    /// # use std::cmp::Ordering;
+    /// # use cursive_table_view::{TableView, TableViewItem};
+    /// # use cursive::align::HAlign;
+    /// # fn main() {
+    /// // Provide a type for the table's columns
+    /// #[derive(Copy, Clone, PartialEq, Eq, Hash)]
+    /// #[derive(Debug)]
+    /// enum BasicColumn {
+    ///     Name,
+    ///     Count,
+    ///     Rate
+    /// }
     ///
-    /// });
+    /// // Define the item type
+    /// #[derive(Clone, Debug)]
+    /// struct Foo {
+    ///     name: String,
+    ///     count: usize,
+    ///     rate: usize
+    /// }
+    ///
+    /// impl TableViewItem<BasicColumn> for Foo {
+    ///
+    ///     fn to_column(&self, column: BasicColumn) -> String {
+    ///         match column {
+    ///             BasicColumn::Name => self.name.to_string(),
+    ///             BasicColumn::Count => format!("{}", self.count),
+    ///             BasicColumn::Rate => format!("{}", self.rate)
+    ///         }
+    ///     }
+    ///
+    ///     fn cmp(&self, other: &Self, column: BasicColumn) -> Ordering where Self: Sized {
+    ///         match column {
+    ///             BasicColumn::Name => self.name.cmp(&other.name),
+    ///             BasicColumn::Count => self.count.cmp(&other.count),
+    ///             BasicColumn::Rate => self.rate.cmp(&other.rate)
+    ///         }
+    ///     }
+    ///
+    /// }
+    ///
+    /// // Configure the actual table with sort callback
+    /// let table = TableView::<Foo, BasicColumn>::new()
+    ///                      .column(BasicColumn::Name, "Name", |c| c.width(20))
+    ///                      .column(BasicColumn::Count, "Count", |c| c.align(HAlign::Center))
+    ///                      .column(BasicColumn::Rate, "Rate", |c| {
+    ///                          c.ordering(Ordering::Greater).align(HAlign::Right).width(20)
+    ///                      })
+    ///                      .default_column(BasicColumn::Name)
+    ///                      .on_sort(|siv, column, order| {
+    ///                          println!("Sorting column {:?} with order {:?}", column, order);
+    ///                      });
+    /// # }
     /// ```
     pub fn set_on_sort<F>(&mut self, cb: F)
     where
@@ -379,11 +431,64 @@ where
     ///
     /// # Example
     ///
-    /// ```ignore
-    /// table.on_sort(|siv: &mut Cursive, column: BasicColumn, order: Ordering| {
+    /// ```rust
+    /// # extern crate cursive;
+    /// # extern crate cursive_table_view;
+    /// # use std::cmp::Ordering;
+    /// # use cursive_table_view::{TableView, TableViewItem};
+    /// # use cursive::align::HAlign;
+    /// # fn main() {
+    /// // Provide a type for the table's columns
+    /// #[derive(Copy, Clone, PartialEq, Eq, Hash)]
+    /// #[derive(Debug)]
+    /// enum BasicColumn {
+    ///     Name,
+    ///     Count,
+    ///     Rate
+    /// }
     ///
-    /// });
+    /// // Define the item type
+    /// #[derive(Clone, Debug)]
+    /// struct Foo {
+    ///     name: String,
+    ///     count: usize,
+    ///     rate: usize
+    /// }
+    ///
+    /// impl TableViewItem<BasicColumn> for Foo {
+    ///
+    ///     fn to_column(&self, column: BasicColumn) -> String {
+    ///         match column {
+    ///             BasicColumn::Name => self.name.to_string(),
+    ///             BasicColumn::Count => format!("{}", self.count),
+    ///             BasicColumn::Rate => format!("{}", self.rate)
+    ///         }
+    ///     }
+    ///
+    ///     fn cmp(&self, other: &Self, column: BasicColumn) -> Ordering where Self: Sized {
+    ///         match column {
+    ///             BasicColumn::Name => self.name.cmp(&other.name),
+    ///             BasicColumn::Count => self.count.cmp(&other.count),
+    ///             BasicColumn::Rate => self.rate.cmp(&other.rate)
+    ///         }
+    ///     }
+    ///
+    /// }
+    ///
+    /// // Configure the actual table with sort callback on Enter
+    /// let table = TableView::<Foo, BasicColumn>::new()
+    ///                      .column(BasicColumn::Name, "Name", |c| c.width(20))
+    ///                      .column(BasicColumn::Count, "Count", |c| c.align(HAlign::Center))
+    ///                      .column(BasicColumn::Rate, "Rate", |c| {
+    ///                          c.ordering(Ordering::Greater).align(HAlign::Right).width(20)
+    ///                      })
+    ///                      .default_column(BasicColumn::Name)
+    ///                      .on_sort(|siv, column, order| {
+    ///                          println!("Sorting column {:?} with order {:?}", column, order);
+    ///                      });
+    /// # }
     /// ```
+    
     pub fn on_sort<F>(self, cb: F) -> Self
     where
         F: Fn(&mut Cursive, H, Ordering) + 'static,
@@ -399,10 +504,61 @@ where
     ///
     /// # Example
     ///
-    /// ```ignore
-    /// table.set_on_submit(|siv: &mut Cursive, row: usize, index: usize| {
+    /// ```rust
+    /// # extern crate cursive;
+    /// # extern crate cursive_table_view;
+    /// # use std::cmp::Ordering;
+    /// # use cursive_table_view::{TableView, TableViewItem};
+    /// # use cursive::align::HAlign;
+    /// # fn main() {
+    /// // Provide a type for the table's columns
+    /// #[derive(Copy, Clone, PartialEq, Eq, Hash)]
+    /// enum BasicColumn {
+    ///     Name,
+    ///     Count,
+    ///     Rate
+    /// }
     ///
-    /// });
+    /// // Define the item type
+    /// #[derive(Clone, Debug)]
+    /// struct Foo {
+    ///     name: String,
+    ///     count: usize,
+    ///     rate: usize
+    /// }
+    ///
+    /// impl TableViewItem<BasicColumn> for Foo {
+    ///
+    ///     fn to_column(&self, column: BasicColumn) -> String {
+    ///         match column {
+    ///             BasicColumn::Name => self.name.to_string(),
+    ///             BasicColumn::Count => format!("{}", self.count),
+    ///             BasicColumn::Rate => format!("{}", self.rate)
+    ///         }
+    ///     }
+    ///
+    ///     fn cmp(&self, other: &Self, column: BasicColumn) -> Ordering where Self: Sized {
+    ///         match column {
+    ///             BasicColumn::Name => self.name.cmp(&other.name),
+    ///             BasicColumn::Count => self.count.cmp(&other.count),
+    ///             BasicColumn::Rate => self.rate.cmp(&other.rate)
+    ///         }
+    ///     }
+    ///
+    /// }
+    ///
+    /// // Configure the actual table with submit callback on Enter
+    /// let table = TableView::<Foo, BasicColumn>::new()
+    ///                      .column(BasicColumn::Name, "Name", |c| c.width(20))
+    ///                      .column(BasicColumn::Count, "Count", |c| c.align(HAlign::Center))
+    ///                      .column(BasicColumn::Rate, "Rate", |c| {
+    ///                          c.ordering(Ordering::Greater).align(HAlign::Right).width(20)
+    ///                      })
+    ///                      .default_column(BasicColumn::Name)
+    ///                      .on_submit(|siv, row, item| {
+    ///                          println!("Submitted row {}: {:?}", row, item);
+    ///                      });
+    /// # }
     /// ```
     pub fn set_on_submit<F>(&mut self, cb: F)
     where
@@ -421,10 +577,61 @@ where
     ///
     /// # Example
     ///
-    /// ```ignore
-    /// table.on_submit(|siv: &mut Cursive, row: usize, index: usize| {
+    /// ```rust
+    /// # extern crate cursive;
+    /// # extern crate cursive_table_view;
+    /// # use std::cmp::Ordering;
+    /// # use cursive_table_view::{TableView, TableViewItem};
+    /// # use cursive::align::HAlign;
+    /// # fn main() {
+    /// // Provide a type for the table's columns
+    /// #[derive(Copy, Clone, PartialEq, Eq, Hash)]
+    /// enum BasicColumn {
+    ///     Name,
+    ///     Count,
+    ///     Rate
+    /// }
     ///
-    /// });
+    /// // Define the item type
+    /// #[derive(Clone, Debug)]
+    /// struct Foo {
+    ///     name: String,
+    ///     count: usize,
+    ///     rate: usize
+    /// }
+    ///
+    /// impl TableViewItem<BasicColumn> for Foo {
+    ///
+    ///     fn to_column(&self, column: BasicColumn) -> String {
+    ///         match column {
+    ///             BasicColumn::Name => self.name.to_string(),
+    ///             BasicColumn::Count => format!("{}", self.count),
+    ///             BasicColumn::Rate => format!("{}", self.rate)
+    ///         }
+    ///     }
+    ///
+    ///     fn cmp(&self, other: &Self, column: BasicColumn) -> Ordering where Self: Sized {
+    ///         match column {
+    ///             BasicColumn::Name => self.name.cmp(&other.name),
+    ///             BasicColumn::Count => self.count.cmp(&other.count),
+    ///             BasicColumn::Rate => self.rate.cmp(&other.rate)
+    ///         }
+    ///     }
+    ///
+    /// }
+    ///
+    /// // Configure the actual table with submit callback on Enter
+    /// let table = TableView::<Foo, BasicColumn>::new()
+    ///                      .column(BasicColumn::Name, "Name", |c| c.width(20))
+    ///                      .column(BasicColumn::Count, "Count", |c| c.align(HAlign::Center))
+    ///                      .column(BasicColumn::Rate, "Rate", |c| {
+    ///                          c.ordering(Ordering::Greater).align(HAlign::Right).width(20)
+    ///                      })
+    ///                      .default_column(BasicColumn::Name)
+    ///                      .on_submit(|siv, row, item| {
+    ///                          println!("Submitted row {}: {:?}", row, item);
+    ///                      });
+    /// # }
     /// ```
     pub fn on_submit<F>(self, cb: F) -> Self
     where
@@ -440,10 +647,61 @@ where
     ///
     /// # Example
     ///
-    /// ```ignore
-    /// table.set_on_select(|siv: &mut Cursive, row: usize, index: usize| {
+        /// ```rust
+    /// # extern crate cursive;
+    /// # extern crate cursive_table_view;
+    /// # use std::cmp::Ordering;
+    /// # use cursive_table_view::{TableView, TableViewItem};
+    /// # use cursive::align::HAlign;
+    /// # fn main() {
+    /// // Provide a type for the table's columns
+    /// #[derive(Copy, Clone, PartialEq, Eq, Hash)]
+    /// enum BasicColumn {
+    ///     Name,
+    ///     Count,
+    ///     Rate
+    /// }
     ///
-    /// });
+    /// // Define the item type
+    /// #[derive(Clone, Debug)]
+    /// struct Foo {
+    ///     name: String,
+    ///     count: usize,
+    ///     rate: usize
+    /// }
+    ///
+    /// impl TableViewItem<BasicColumn> for Foo {
+    ///
+    ///     fn to_column(&self, column: BasicColumn) -> String {
+    ///         match column {
+    ///             BasicColumn::Name => self.name.to_string(),
+    ///             BasicColumn::Count => format!("{}", self.count),
+    ///             BasicColumn::Rate => format!("{}", self.rate)
+    ///         }
+    ///     }
+    ///
+    ///     fn cmp(&self, other: &Self, column: BasicColumn) -> Ordering where Self: Sized {
+    ///         match column {
+    ///             BasicColumn::Name => self.name.cmp(&other.name),
+    ///             BasicColumn::Count => self.count.cmp(&other.count),
+    ///             BasicColumn::Rate => self.rate.cmp(&other.rate)
+    ///         }
+    ///     }
+    ///
+    /// }
+    ///
+    /// // Configure the actual table with select callback
+    /// let table = TableView::<Foo, BasicColumn>::new()
+    ///                      .column(BasicColumn::Name, "Name", |c| c.width(20))
+    ///                      .column(BasicColumn::Count, "Count", |c| c.align(HAlign::Center))
+    ///                      .column(BasicColumn::Rate, "Rate", |c| {
+    ///                          c.ordering(Ordering::Greater).align(HAlign::Right).width(20)
+    ///                      })
+    ///                      .default_column(BasicColumn::Name)
+    ///                      .on_select(|siv, row, item| {
+    ///                          println!("Selected row {}: {:?}", row, item);
+    ///                      });
+    /// # }
     /// ```
     pub fn set_on_select<F>(&mut self, cb: F)
     where
@@ -461,10 +719,61 @@ where
     ///
     /// # Example
     ///
-    /// ```ignore
-    /// table.on_select(|siv: &mut Cursive, row: usize, index: usize| {
+        /// ```rust
+    /// # extern crate cursive;
+    /// # extern crate cursive_table_view;
+    /// # use std::cmp::Ordering;
+    /// # use cursive_table_view::{TableView, TableViewItem};
+    /// # use cursive::align::HAlign;
+    /// # fn main() {
+    /// // Provide a type for the table's columns
+    /// #[derive(Copy, Clone, PartialEq, Eq, Hash)]
+    /// enum BasicColumn {
+    ///     Name,
+    ///     Count,
+    ///     Rate
+    /// }
     ///
-    /// });
+    /// // Define the item type
+    /// #[derive(Clone, Debug)]
+    /// struct Foo {
+    ///     name: String,
+    ///     count: usize,
+    ///     rate: usize
+    /// }
+    ///
+    /// impl TableViewItem<BasicColumn> for Foo {
+    ///
+    ///     fn to_column(&self, column: BasicColumn) -> String {
+    ///         match column {
+    ///             BasicColumn::Name => self.name.to_string(),
+    ///             BasicColumn::Count => format!("{}", self.count),
+    ///             BasicColumn::Rate => format!("{}", self.rate)
+    ///         }
+    ///     }
+    ///
+    ///     fn cmp(&self, other: &Self, column: BasicColumn) -> Ordering where Self: Sized {
+    ///         match column {
+    ///             BasicColumn::Name => self.name.cmp(&other.name),
+    ///             BasicColumn::Count => self.count.cmp(&other.count),
+    ///             BasicColumn::Rate => self.rate.cmp(&other.rate)
+    ///         }
+    ///     }
+    ///
+    /// }
+    ///
+    /// // Configure the actual table with select callback
+    /// let table = TableView::<Foo, BasicColumn>::new()
+    ///                      .column(BasicColumn::Name, "Name", |c| c.width(20))
+    ///                      .column(BasicColumn::Count, "Count", |c| c.align(HAlign::Center))
+    ///                      .column(BasicColumn::Rate, "Rate", |c| {
+    ///                          c.ordering(Ordering::Greater).align(HAlign::Right).width(20)
+    ///                      })
+    ///                      .default_column(BasicColumn::Name)
+    ///                      .on_select(|siv, row, item| {
+    ///                          println!("Selected row {}: {:?}", row, item);
+    ///                      });
+    /// # }
     /// ```
     pub fn on_select<F>(self, cb: F) -> Self
     where
@@ -588,14 +897,21 @@ where
     /// vector.
     pub fn set_selected_item(&mut self, item_index: usize) {
         // TODO optimize the performance for very large item lists
-        if item_index < self.items.len() {
-            for (row, item) in self.rows_to_items.iter().enumerate() {
-                if *item == item_index {
-                    self.focus = row;
-                    self.scroll_core.scroll_to_y(row);
-                    break;
-                }
-            }
+        // if item_index < self.items.len() {
+        //     for (row, item) in self.rows_to_items.iter().enumerate() {
+        //         if *item == item_index {
+        //             self.focus = row;
+        //             self.scroll_core.scroll_to_y(row);
+        //             break;
+        //         }
+        //     }
+        // }
+        let reverse_mapping: HashMap<usize, usize> = self.rows_to_items.iter().enumerate().map(|(row, &item)| (item, row)).collect();
+
+        // Use the reverse mapping to find the row corresponding to the item_index
+        if let Some(&row) = reverse_mapping.get(&item_index) {
+            self.focus = row;
+            self.scroll_core.scroll_to_y(row);
         }
     }
 
